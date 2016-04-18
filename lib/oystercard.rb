@@ -13,4 +13,8 @@ MAXIMUM_BALANCE = 90
     @balance += money
   end
 
+  def deduct(money)
+    @balance -= money
+  end
+
 end
