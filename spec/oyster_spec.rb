@@ -16,6 +16,31 @@ describe Oyster do
       oyster.top_up(Oyster::LIMIT)
       expect{oyster.top_up(1)}.to raise_error "Balance cannot exceed #{Oyster::LIMIT}!"
     end
-  end	
+  end
+
+  context '#deduct' do
+    it 'should decrease the balance by the amount passed' do
+      oyster.deduct(20)
+      expect(oyster.balance).to eq -20
+    end
+  end
+
+  context 'touching in and out' do
+
+    it 'is initially not in a journey' do
+      expect(oyster).not_to be_in_journey
+    end
+
+    it 'expects in_journey? to return true having touched in' do
+      oyster.touch_in
+      expect(oyster).to be_in_journey
+    end
+
+    it 'expects in_journey? to return false having touched out' do
+      oyster.touch_in
+      oyster.touch_out
+      expect(oyster).not_to be_in_journey
+    end
+  end
 
 end
