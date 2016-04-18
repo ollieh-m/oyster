@@ -4,6 +4,23 @@ describe Oystercard do
 
   subject(:oystercard){ described_class.new }
 
+  it { is_expected.to respond_to(:in_journey?) }
+  it { is_expected.to respond_to(:touch_in) }
+  it { is_expected.to respond_to(:touch_out) }
+
+  context 'journey' do
+    it 'registers being in use when touched in' do
+      oystercard.touch_in
+      expect(oystercard).to be_in_journey
+    end
+
+    it 'registers not being in use when touched out' do
+      oystercard.touch_in
+      oystercard.touch_out
+      expect(oystercard).not_to be_in_journey
+    end
+  end
+
   context 'balance' do
 
     it { is_expected.to respond_to(:balance) }
