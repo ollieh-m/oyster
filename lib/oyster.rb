@@ -3,6 +3,7 @@ class Oyster
   attr_reader :balance
 
   LIMIT = 90
+  MIN_BALANCE = 1
 
   def initialize
     @balance = 0
@@ -18,6 +19,7 @@ class Oyster
   end
 
   def touch_in
+    raise "Balance must be at least £1" if balance < MIN_BALANCE
     @in_use = true
   end
 
