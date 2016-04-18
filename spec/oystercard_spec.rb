@@ -19,4 +19,11 @@ describe Oystercard do
     expect { oystercard.top_up(1) }.to raise_error message
   end
 
+  it 'deduct money when used' do
+    oystercard.top_up(30)
+    oystercard.deduct(15)
+    expect(oystercard.balance).to eq 15
+
+  end
+
 end

@@ -13,4 +13,8 @@ class Oystercard
     self.balance += money
   end
 
+  def deduct(spending)
+    self.balance -= spending
+  end
+
 end
