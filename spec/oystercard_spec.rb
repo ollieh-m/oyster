@@ -8,4 +8,9 @@ describe Oystercard do
     expect(oystercard.balance).to eq 0
   end
 
+  it 'can be topped up' do
+    oystercard.top_up(10)
+    expect(oystercard.balance).to eq 10
+  end
+
 end
