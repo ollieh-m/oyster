@@ -8,13 +8,20 @@ describe Oystercard do
   it { is_expected.to respond_to(:touch_in) }
   it { is_expected.to respond_to(:touch_out) }
 
+  it 'cannot be touched in if balance is less than £1' do
+    oystercard.top_up(0.9)
+    expect {oystercard.touch_in}.to raise_error 'insufficient funds'
+  end
+
   context 'journey' do
     it 'registers being in use when touched in' do
+      oystercard.top_up 1
       oystercard.touch_in
       expect(oystercard).to be_in_journey
     end
 
     it 'registers not being in use when touched out' do
+      oystercard.top_up 1
       oystercard.touch_in
       oystercard.touch_out
       expect(oystercard).not_to be_in_journey
