@@ -24,9 +24,10 @@ class Oystercard
     record_entry(station)
   end
 
-  def touch_out
+  def touch_out(station)
     deduct
     self.entry_station = nil
+    record_exit(station)
   end
 
   def in_journey?
@@ -51,6 +52,10 @@ class Oystercard
   
   def record_entry(station)
     @journey_history << {start_station: station}
+  end
+  
+  def record_exit(station)
+    @journey_history.last[:exit_station] = station 
   end
 
 end
