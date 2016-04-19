@@ -32,28 +32,30 @@ describe Oystercard do
 
   end
 
-  describe '#touch_in' do
+  context 'when there is enough money for a trip' do
 
-    it 'begins the journey' do
+    before(:each) do
       oystercard.top_up(Oystercard::MAX_LIMIT)
+    end
+
+    it '#touch_in' do
       oystercard.touch_in
       expect(oystercard).to be_in_journey
     end
 
-    it "cannot begin journey if balance less than #{Oystercard::MIN_LIMIT}" do
-      message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
-      expect{oystercard.touch_in}.to raise_error message
+    it '#touch_out' do
+      oystercard.touch_in
+      oystercard.touch_out
+      expect(oystercard).not_to be_in_journey
     end
 
   end
 
-  describe '#touch_out' do
+  context "When there is less than #{Oystercard::MIN_LIMIT}" do
 
-    it 'ends the journey' do
-      oystercard.top_up(Oystercard::MAX_LIMIT)
-      oystercard.touch_in
-      oystercard.touch_out
-      expect(oystercard).not_to be_in_journey
+    it "cannot begin journey" do
+      message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
+      expect{oystercard.touch_in}.to raise_error message
     end
 
   end
