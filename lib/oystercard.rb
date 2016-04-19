@@ -5,6 +5,8 @@ class Oystercard
 
 	MAXIMUM_BALANCE = 90
 
+  MINIMUM_FARE = 1
+
 	def initialize
 		@balance = 0
 	end
@@ -19,6 +21,7 @@ class Oystercard
   	end
 
   	def touch_in
+      fail "balance must be at least £#{MINIMUM_FARE}" if balance < MINIMUM_FARE
   		@in_use = true
   	end
 

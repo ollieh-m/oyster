@@ -31,12 +31,14 @@ describe Oystercard do
 	end
 
 	describe '#touch in/out support' do
-		it "can touch in" do
+		it "can touch in with al least £1" do
+			oystercard.top_up(Oystercard::MINIMUM_FARE)
 			oystercard.touch_in
   			expect(oystercard).to be_in_journey
 		end
 
 		it "can touch out" do
+			oystercard.top_up(Oystercard::MINIMUM_FARE)
   			oystercard.touch_in
   			oystercard.touch_out
   			expect(oystercard).not_to be_in_journey
@@ -46,6 +48,9 @@ describe Oystercard do
   			expect(oystercard).not_to be_in_journey
 		end
 
+		it 'fails if balance is below the minimum' do 
+			expect{oystercard.touch_in}.to raise_error "balance must be at least £#{Oystercard::MINIMUM_FARE}"
+		end
 
 	end
 end
