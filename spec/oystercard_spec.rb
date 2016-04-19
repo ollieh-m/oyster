@@ -27,7 +27,7 @@ describe Oystercard do
 
   end
 
-
+  
   context 'when there is enough money for a trip' do
 
     before(:each) do
@@ -42,7 +42,11 @@ describe Oystercard do
     it 'remembers the station that was touched in' do
       expect(oystercard.entry_station).to eq station
     end
-
+    
+    it 'stores entry station when touched in' do 
+      expect(oystercard.journey_history.last[:start_station]).to eq station
+    end
+    
     it '#touch_out' do
       oystercard.touch_out
       expect(oystercard).not_to be_in_journey
