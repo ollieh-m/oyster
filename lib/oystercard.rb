@@ -8,13 +8,20 @@ class Oystercard
     @balance = 0
   end
 
-  def top_up(money)
-    fail "Maximum limit of £#{Oystercard::MAX_LIMIT}." if balance >= MAX_LIMIT
-    self.balance += money
+  def top_up(deposit)
+    message = "No more than #{Oystercard::MAX_LIMIT} in balance!"
+    fail message if limit_reached?(deposit)
+    self.balance += deposit
   end
 
   def deduct(spending)
     self.balance -= spending
+  end
+
+  private
+
+  def limit_reached?(deposit)
+    deposit + balance > Oystercard::MAX_LIMIT
   end
 
 end
