@@ -3,12 +3,11 @@ class Oystercard
   MAX_LIMIT = 90
   MIN_LIMIT = 1
 
-  attr_reader :balance, :in_journey
-  alias_method :in_journey?, :in_journey
+  attr_reader :balance, :entry_station
 
   def initialize
     @balance = 0
-    @in_journey = false
+    @entry_station = nil
   end
 
   def top_up(deposit)
@@ -17,20 +16,24 @@ class Oystercard
     self.balance += deposit
   end
 
-  def touch_in
+  def touch_in(station)
     message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
     fail message if too_poor?
-    self.in_journey = true
+    self.entry_station = station
   end
 
   def touch_out
-    self.in_journey = false
     deduct
+    self.entry_station = nil
+  end
+
+  def in_journey?
+    !entry_station.nil?
   end
 
   private
 
-  attr_writer :balance, :in_journey
+  attr_writer :balance, :entry_station
 
   def limit_reached?(deposit)
     deposit + balance > Oystercard::MAX_LIMIT
