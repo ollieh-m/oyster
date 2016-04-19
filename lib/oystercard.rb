@@ -2,6 +2,7 @@ class Oystercard
 
   MAX_LIMIT = 90
   MIN_LIMIT = 1
+  PENALTY = 6
 
   attr_reader :balance, :entry_station, :journey_history
 
@@ -17,11 +18,12 @@ class Oystercard
     self.balance += deposit
   end
 
-  def touch_in(station)
+  # dep inj as touch_in parameter, stores journey object direct in journey history
+  def touch_in(journey = Journey.new(station))
     message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
     fail message if too_poor?
-    self.entry_station = station
-    record_entry(station)
+    penalty if not_touched_out?
+    journey_history << journey
   end
 
   def touch_out(station)
@@ -46,16 +48,21 @@ class Oystercard
     balance < Oystercard::MIN_LIMIT
   end
 
+  def penalty
+    self.balance -= PENALTY
+  end
+  
   def deduct
     self.balance -= MIN_LIMIT
   end
   
-  def record_entry(station)
-    @journey_history << {start_station: station}
+  def new_card?
+    journey_history.empty?
   end
   
-  def record_exit(station)
-    @journey_history.last[:exit_station] = station 
+  def not_touched_out?
+    return false if new_card?
+    !journey_history.last.ended?
   end
-
+  
 end
