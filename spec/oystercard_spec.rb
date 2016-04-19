@@ -3,9 +3,10 @@ require 'oystercard'
 describe Oystercard do
 
 	subject(:oystercard) {described_class.new}
+	let(:station) {double :station}
 	let(:oystercard_topped) do
 		subject.top_up(Oystercard::MINIMUM_FARE)
-		subject.touch_in
+		subject.touch_in(station)
 		subject
 	end
 
@@ -44,12 +45,24 @@ describe Oystercard do
 		end
 
 		it 'fails to touch in if balance is below the minimum' do 
-			expect{oystercard.touch_in}.to raise_error "balance must be at least £#{Oystercard::MINIMUM_FARE}"
+			expect{oystercard.touch_in(station)}.to raise_error "balance must be at least £#{Oystercard::MINIMUM_FARE}"
 		end
 
 		it 'deducts minimum fare when touching out' do
 			expect{oystercard_topped.touch_out}.to change{oystercard_topped.balance}.by -Oystercard::MINIMUM_FARE
 		end
+	end
+
+	context 'storing journy information' do 
+		it 'it records the station you check in at' do 
+			expect(oystercard_topped.entry_station).to eq station
+		end
+
+		it 'it resets the entry_station on touch out' do
+			oystercard_topped.touch_out
+			expect(oystercard_topped.entry_station).to eq nil
+		end
+
 	end
 
 end
