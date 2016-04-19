@@ -17,10 +17,6 @@ class Oystercard
     self.balance += deposit
   end
 
-  def deduct(spending)
-    self.balance -= spending
-  end
-
   def touch_in
     message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
     fail message if too_poor?
@@ -29,6 +25,7 @@ class Oystercard
 
   def touch_out
     self.in_journey = false
+    deduct
   end
 
   private
@@ -41,6 +38,10 @@ class Oystercard
 
   def too_poor?
     balance < Oystercard::MIN_LIMIT
+  end
+
+  def deduct
+    self.balance -= MIN_LIMIT
   end
 
 end

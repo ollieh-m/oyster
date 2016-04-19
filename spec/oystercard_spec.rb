@@ -22,29 +22,23 @@ describe Oystercard do
 
   end
 
-  describe '#deduct' do
-
-    it 'deduct money when used' do
-      oystercard.top_up(30)
-      oystercard.deduct(15)
-      expect(oystercard.balance).to eq 15
-    end
-
-  end
 
   context 'when there is enough money for a trip' do
 
     before(:each) do
       oystercard.top_up(Oystercard::MAX_LIMIT)
+      oystercard.touch_in
     end
 
+    it 'deducts minimum fare on touch out' do
+      expect {oystercard.touch_out}.to change{oystercard.balance}.by(-1)
+    end
+    
     it '#touch_in' do
-      oystercard.touch_in
       expect(oystercard).to be_in_journey
     end
 
     it '#touch_out' do
-      oystercard.touch_in
       oystercard.touch_out
       expect(oystercard).not_to be_in_journey
     end
