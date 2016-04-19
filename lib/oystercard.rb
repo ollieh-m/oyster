@@ -19,12 +19,10 @@ class Oystercard
   def touch_in(station)
     message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
     fail message if too_poor?
-    self.in_journey = true
     self.entry_station = station
   end
 
   def touch_out
-    self.in_journey = false
     deduct
     self.entry_station = nil
   end
