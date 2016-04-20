@@ -44,11 +44,4 @@ describe Journey do
     end
   end
 
-  describe '#levy_penalty' do
-    it 'tells card to deduct penalty amount' do
-      expect(card).to receive(:deduct).with(6)
-      journey.levy_penalty(card)
-    end
-  end
-    
 end

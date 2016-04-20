@@ -20,7 +20,7 @@ class Oystercard
   def touch_in(station, journey = Journey.new)
     journey.start_journey(station)
     fail "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}" if too_poor?
-    journey.levy_penalty(self) if @touched_in
+    journey.fare(self) if @touched_in
     journey_history << journey
     @touched_in = true
   end

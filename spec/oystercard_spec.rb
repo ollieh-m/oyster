@@ -30,21 +30,27 @@ describe Oystercard do
     end
 
     describe '#touch_in' do
-      it 'sets the start station in the journey object when not already touched in' do
+      it 'sets the start station in the journey object ' do
         expect(journey).to receive(:start_journey).with(station)
         oystercard.touch_in(station,journey)
-      end  
+      end
+      
+      it 'if card is already touched in, it calls fare on journey' do
+        oystercard.touch_in(station, journey)
+        expect(journey).to receive(:fare).with(oystercard)
+        oystercard.touch_in(station, journey)
+      end
+      
+      it 'if card is not already touched in it does not call fare' do
+        expect(journey).not_to receive(:fare).with(oystercard)
+        oystercard.touch_in(station, journey)
+      end
 
       it 'records the journey into journey history' do
         oystercard.touch_in(station, journey)
         expect(oystercard.journey_history.last).to eq journey
       end
       
-      it 'tells journey a penalty is needed if card is already touched in' do
-        oystercard.touch_in(station,journey)
-        expect(journey).to receive(:levy_penalty).with(oystercard)
-        oystercard.touch_in(station, journey)
-      end
     end
     
     describe '#touch_out' do
@@ -54,13 +60,6 @@ describe Oystercard do
         oystercard.touch_out(station2)
       end
 
-      it 'tells journey a penalty is needed if already touched out' do
-        oystercard.touch_in(station, journey)
-        oystercard.touch_out(station2, journey)
-        expect(journey).to receive(:levy_penalty).with(oystercard)
-        oystercard.touch_out(station2, journey)
-      end
-      
       it 'creates a new entry in journey_history if not touched in' do
         oystercard.touch_out(station, journey)
         expect(oystercard.journey_history.last).to eq(journey.end_journey(station))  

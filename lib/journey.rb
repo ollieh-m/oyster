@@ -23,9 +23,6 @@ class Journey
     !!end_station
   end
   
-  def levy_penalty(card)
-    card.deduct(PENALTY)
-  end
 
   def fare(card)
     if @start_station.nil? or @end_station.nil?
