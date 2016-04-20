@@ -7,17 +7,10 @@ describe Journey do
    
   
   describe '#end_journey' do
-  
-    it 'ends the journey' do
-      journey.end_journey(station)
-      expect(journey).to be_ended
-    end        
-    
     it 'store the end station' do
       journey.end_journey(station)
       expect(journey.end_station).to eq station
     end
-    
   end
   
   describe '#start_journey' do
@@ -26,6 +19,15 @@ describe Journey do
       expect(journey.start_station).to eq station
     end
   end
-    
+
+  describe '#completed?' do
+    it "returns false if a journey hasn't ended" do
+      expect(journey.completed?).to eq false
+    end
+    it 'ends the journey' do
+      journey.end_journey(station)
+      expect(journey).to be_completed
+    end 
+  end
     
 end
