@@ -1,7 +1,5 @@
 class Journey
 
-	attr_reader :card, :entry_station, :exit_station
-
 	MINIMUM_FARE = 1
 
 	def initialize(card)
@@ -31,7 +29,11 @@ class Journey
 	def finalise_journey
 		card.deduct(fare)
 		card.complete(entry_station,exit_station)
+		@entry_station = nil
 	end
 
+		private
+
+		attr_reader :card, :entry_station, :exit_station
 
 end
