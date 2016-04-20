@@ -9,17 +9,8 @@ describe Journey do
   
   describe '#end_journey' do
     it 'store the end station' do
-      journey.end_journey(station,card)
+      journey.end_journey(station)
       expect(journey.end_station).to eq station
-    end
-    it 'if start_station has been set, it deducts normal fare from card' do
-      journey.start_journey(station)
-      expect(card).to receive(:deduct).with(1)
-      journey.end_journey(station,card)
-    end
-    it 'if start_station has not been set, it does not deduct normal fare from card' do
-      expect(card).not_to receive(:deduct).with(1)
-      journey.end_journey(station,card)
     end
   end
   
@@ -35,13 +26,25 @@ describe Journey do
       expect(journey.completed?).to eq false
     end
     it 'ends the journey' do
-      journey.end_journey(station,card)
+      journey.end_journey(station)
       expect(journey).to be_completed
     end 
   end
-  
+
+  describe '#fare' do
+    it 'deducts penalty fare if start or end station are nil' do
+      expect(card).to receive(:deduct).with(6)
+      journey.fare(card)
+    end
+    it 'deducts standard fare if there is a start and end station' do
+      journey.start_journey(station)
+      journey.end_journey(station)
+      expect(card).to receive(:deduct).with(1)
+      journey.fare(card)
+    end
+  end
+
   describe '#levy_penalty' do
-  
     it 'tells card to deduct penalty amount' do
       expect(card).to receive(:deduct).with(6)
       journey.levy_penalty(card)

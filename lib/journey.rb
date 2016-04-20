@@ -10,9 +10,8 @@ class Journey
     @end_station = nil
   end
  
-  def end_journey(station,card)
+  def end_journey(station)
     @end_station = station
-    card.deduct(STANDARD_FARE) unless @start_station.nil?
     self
   end
   
@@ -26,6 +25,14 @@ class Journey
   
   def levy_penalty(card)
     card.deduct(PENALTY)
+  end
+
+  def fare(card)
+    if @start_station.nil? or @end_station.nil?
+      card.deduct(PENALTY)
+    else
+      card.deduct(STANDARD_FARE)
+    end
   end
   
 end
