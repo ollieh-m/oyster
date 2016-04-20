@@ -75,4 +75,11 @@ describe Oystercard do
     end
   end
 
+  context '#deduct' do
+    it 'reduces card balance by the amount given' do
+      oystercard.top_up(20)
+      expect{oystercard.deduct(5)}.to change{oystercard.balance}.by(-5)
+    end
+  end
+
 end

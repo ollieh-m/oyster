@@ -2,7 +2,6 @@ class Oystercard
 
   MAX_LIMIT = 90
   MIN_LIMIT = 1
-  PENALTY = 6 
 
   attr_reader :balance, :journey_history
 
@@ -33,8 +32,11 @@ class Oystercard
     else
       @journey_history.last.end_journey(station)
     end
-    deduct
     @touched_in = false
+  end
+  
+  def deduct(amount)
+    @balance -= amount
   end
 
   private
@@ -47,14 +49,6 @@ class Oystercard
 
   def too_poor?
     balance < Oystercard::MIN_LIMIT
-  end
-
-  def penalty
-    self.balance -= PENALTY
-  end
-  
-  def deduct
-    !@touched_in ? penalty : self.balance -= MIN_LIMIT
-  end
+  end  
   
 end

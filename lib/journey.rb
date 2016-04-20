@@ -1,6 +1,7 @@
 class Journey
     
   PENALTY = 6
+  STANDARD_FARE = 1
   
   attr_reader :end_station, :start_station
   
@@ -9,8 +10,9 @@ class Journey
     @end_station = nil
   end
  
-  def end_journey(station)
+  def end_journey(station,card)
     @end_station = station
+    card.deduct(STANDARD_FARE) unless @start_station.nil?
     self
   end
   
