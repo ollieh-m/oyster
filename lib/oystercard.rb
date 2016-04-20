@@ -1,10 +1,9 @@
 
 class Oystercard
 
-	attr_reader :balance, :entry_station, :exit_station, :journeys
+	attr_reader :balance, :journeys
 
 	MAXIMUM_BALANCE = 90
-
   MINIMUM_FARE = 1
 
 	def initialize
@@ -13,7 +12,7 @@ class Oystercard
 	end
 
 	def top_up(amount)
-    fail "Maximum balance #{MAXIMUM_BALANCE}exceeded" if amount + balance > MAXIMUM_BALANCE
+    fail "Maximum balance £#{MAXIMUM_BALANCE} exceeded" if amount + balance > MAXIMUM_BALANCE
     @balance += amount
   end
 
@@ -26,11 +25,10 @@ class Oystercard
   def touch_out(journey)
     journey.levy_penalty if !@in_use
   	@in_use = false
-    @journeys[0] = { entry_station: @entry_station, exit_station: @exit_station }
   end
 
   def in_journey?
-  	@in_use #!!entry_station
+  	@in_use
   end
 
   def complete(entry_station, exit_station)
@@ -38,6 +36,8 @@ class Oystercard
   end
 
     private
+
+    attr_reader :entry_station, :exit_station
 
     def deduct(amount)
       @balance -= amount
