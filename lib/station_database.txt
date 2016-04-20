@@ -1,2 +1,0 @@
-Camden = 1
-Chalk Farm = 2
