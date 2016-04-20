@@ -5,7 +5,8 @@ describe Oystercard do
   subject(:oystercard) { described_class.new }
   let(:station) { double(:station) }
   let(:station2) { double(:station2) }
-  let(:journey) { double(:journey, start_journey: nil, end_journey: 'fish', levy_penalty: nil ) }
+  let(:journey2) { double(:journey2, fare: 'fish') }
+  let(:journey) { double(:journey, start_journey: nil, end_journey: journey2, fare: nil ) }
  
   it 'defaults with balance of 0' do
     expect(oystercard.balance).to eq 0
@@ -59,11 +60,18 @@ describe Oystercard do
         expect(oystercard.journey_history.last).to receive(:end_journey).with(station2)
         oystercard.touch_out(station2)
       end
-
+      
       it 'creates a new entry in journey_history if not touched in' do
         oystercard.touch_out(station, journey)
         expect(oystercard.journey_history.last).to eq(journey.end_journey(station))  
       end
+      
+      it 'last item in journey history has fare called on it' do
+        oystercard.touch_in(station, journey)
+        expect(oystercard.journey_history.last).to receive(:fare).with(oystercard)
+        oystercard.touch_out(station, journey)
+      end
+      
     end
   end
   

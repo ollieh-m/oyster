@@ -27,11 +27,11 @@ class Oystercard
 
   def touch_out(station, journey = Journey.new)
     if !@touched_in
-      journey.levy_penalty(self)
       @journey_history << journey.end_journey(station)
     else
       @journey_history.last.end_journey(station)
     end
+    @journey_history.last.fare(self)
     @touched_in = false
   end
   
