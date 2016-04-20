@@ -2,12 +2,9 @@ require 'journey'
 
 describe Journey do
     
-  subject(:journey) { described_class.new(:start_station) }
+  subject(:journey) { described_class.new }
   let (:station) { double :station }
    
-  it 'on initialization sets start station' do
-    expect(journey.start_station).to eq :start_station
-  end
   
   describe '#end_journey' do
   
@@ -16,11 +13,18 @@ describe Journey do
       expect(journey).to be_ended
     end        
     
-    it 'store the final station' do
+    it 'store the end station' do
       journey.end_journey(station)
       expect(journey.end_station).to eq station
     end
     
+  end
+  
+  describe '#start_journey' do
+    it 'stores the start station' do
+      journey.start_journey(station)
+      expect(journey.start_station).to eq station
+    end
   end
     
     
