@@ -3,7 +3,8 @@ require 'journey'
 describe Journey do
     
   subject(:journey) { described_class.new }
-  let (:station) { double :station }
+  let(:station) { double :station }
+  let(:card) {double :card }
    
   
   describe '#end_journey' do
@@ -28,6 +29,14 @@ describe Journey do
       journey.end_journey(station)
       expect(journey).to be_completed
     end 
+  end
+  
+  describe '#levy_penalty' do
+  
+    it 'tells card to deduct penalty amount' do
+      expect(card).to receive(:deduct).with(6)
+      journey.levy_penalty(card)
+    end
   end
     
 end

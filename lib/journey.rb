@@ -1,5 +1,7 @@
 class Journey
     
+  PENALTY = 6
+  
   attr_reader :end_station, :start_station
   
   def initialize
@@ -18,6 +20,10 @@ class Journey
   
   def completed?
     !!end_station
+  end
+  
+  def levy_penalty(card)
+    card.deduct(PENALTY)
   end
   
 end

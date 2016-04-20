@@ -5,9 +5,8 @@ describe Oystercard do
   subject(:oystercard) { described_class.new }
   let(:station) { double(:station) }
   let(:station2) { double(:station2) }
-  let(:journey) { double(:journey, start_journey: nil, end_journey: 'fish' ) }
-  let(:unfinished_business) { double(:journey, ended?: false) }
-  
+  let(:journey) { double(:journey, start_journey: nil, end_journey: 'fish', levy_penalty: nil ) }
+ 
   it 'defaults with balance of 0' do
     expect(oystercard.balance).to eq 0
   end
@@ -41,9 +40,10 @@ describe Oystercard do
         expect(oystercard.journey_history.last).to eq journey
       end
       
-      it 'applies a penalty fare if card is already touched in' do
+      it 'tells journey a penalty is needed if card is already touched in' do
         oystercard.touch_in(station,journey)
-        expect { oystercard.touch_in(journey) }.to change{ oystercard.balance }.by(-6)
+        expect(journey).to receive(:levy_penalty).with(oystercard)
+        oystercard.touch_in(station, journey)
       end
     end
     
@@ -54,8 +54,11 @@ describe Oystercard do
         oystercard.touch_out(station2)
       end
 
-      it 'deducts penalty fare when not touched in' do
-        expect{ oystercard.touch_out(station) }.to change{oystercard.balance}.by(-6)
+      it 'tells journey a penalty is needed if already touched out' do
+        oystercard.touch_in(station, journey)
+        oystercard.touch_out(station2, journey)
+        expect(journey).to receive(:levy_penalty).with(oystercard)
+        oystercard.touch_out(station2, journey)
       end
       
       it 'creates a new entry in journey_history if not touched in' do
