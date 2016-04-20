@@ -1,0 +1,1 @@
+This the the oystercard system build by Letian. It cannot be possibly worse than the myki card system of Melbourne, Victoria.
