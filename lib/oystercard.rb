@@ -5,11 +5,9 @@ class Oystercard
 
   attr_reader :balance, :journey_history
 
-  def initialize(journey=Journey.new)
+  def initialize
     @balance = 0
     @journey_history = []
-    @touched_in = false
-    @journey = journey
   end
 
   def top_up(deposit)
@@ -18,33 +16,51 @@ class Oystercard
     @balance += deposit
   end
 
-  def touch_in(station)
-    fail "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}" if too_poor?
-    journey.start_journey(station,self)
+  def touch_in(station,journey=Journey.new)
+    check_journey
+    start(journey,station)
+    add_to_log
   end
 
-  def touch_out(station)
-    journey.end_journey(station,self)
+  def touch_out(station,journey_reset=Journey.new)
+    if @journey_history.empty? or @journey_history.last.complete?
+      @journey = journey_reset
+      add_to_log
+    end
+    journey.end_journey(station)
+    deduct(journey.fare)
   end
   
-  def deduct(amount)
-    @balance -= amount
-  end
+    private
 
-  def add_to_log(startstation,endstation)
-    journey_history << {entrystation: startstation, exitstation: endstation}
-  end
+    attr_reader :journey
+    
+    def start(journey,station)
+      @journey = journey
+      journey.start_journey(station)
+    end
 
-  private
+    def check_journey
+      fail "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}" if too_poor?
+      unless @journey_history.empty?
+        deduct(@journey_history.last.fare) if @journey_history.last.exit_nil?
+      end
+    end
 
-  attr_reader :journey
+    def deduct(amount)
+      @balance -= amount
+    end
 
-  def limit_reached?(deposit)
-    deposit + balance > Oystercard::MAX_LIMIT
-  end
+    def add_to_log
+      @journey_history << journey
+    end
+    
+    def limit_reached?(deposit)
+      deposit + balance > Oystercard::MAX_LIMIT
+    end
 
-  def too_poor?
-    balance < Oystercard::MIN_LIMIT
-  end  
+    def too_poor?
+      balance < Oystercard::MIN_LIMIT
+    end  
   
 end
