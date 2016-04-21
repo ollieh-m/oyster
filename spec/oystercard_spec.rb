@@ -2,10 +2,12 @@ require 'oystercard'
 
 describe Oystercard do
 
-  let(:journey) { double(:journey, fare: 1, start_journey: nil, end_journey: nil, complete?: false) }
-  let(:invalid_journey) { double(:journey, start_journey: nil, end_journey: nil, fare: 6, exit_nil?: true) }
-  let(:journeycomplete) { double(:journey, complete?: true, start_journey: nil) }
+  let(:journey) { double(:journey, start_journey: nil, end_journey: nil, complete?: false, fare: 1) }
+  let(:invalid_journey) { double(:journey, start_journey: nil, end_journey: nil, exit_nil?: true, fare: 6) }
+  let(:journeycomplete) { double(:journey, start_journey: nil, complete?: true, ) }
+  
   subject(:oystercard) { described_class.new }
+  
   let(:startstation) { double(:station) }
   let(:endstation) { double(:station) }
  
@@ -25,7 +27,7 @@ describe Oystercard do
   end
 
   describe '#touch_in' do
-    it 'makes the journey start' do
+    it 'starts the journey' do
       oystercard.top_up(Oystercard::MAX_LIMIT)
       expect(journey).to receive(:start_journey).with(startstation)
       oystercard.touch_in(startstation,journey)
@@ -35,25 +37,45 @@ describe Oystercard do
       oystercard.touch_in(startstation,invalid_journey)
       expect {oystercard.touch_in(startstation,journey)}.to change{oystercard.balance}.by -6  
     end
-  end
-    
-  describe '#touch_out' do
-    it 'makes the journey end' do
-      oystercard.top_up(Oystercard::MAX_LIMIT)
-      oystercard.touch_in(startstation,journey)
-      expect(journey).to receive(:end_journey).with(endstation)
-      oystercard.touch_out(endstation)
-    end
     it 'adds the journey to the journey history' do
       oystercard.top_up(Oystercard::MAX_LIMIT)
       oystercard.touch_in(startstation,journey)
-      oystercard.touch_out(endstation)
-      expect(oystercard.journey_history).to include(journey)
+      expect(oystercard.journey_history).to include journey
     end
-    it 'deducts a penalty fare if the last journey was completed' do
-      oystercard.top_up(Oystercard::MAX_LIMIT)
-      oystercard.touch_in(startstation,journeycomplete)
-      expect {oystercard.touch_out(startstation,invalid_journey)}.to change{oystercard.balance}.by -6  
+  end
+    
+  describe '#touch_out' do
+    context 'when not touched in' do
+      it 'calls end journey on a new journey object' do
+        oystercard.top_up(Oystercard::MAX_LIMIT)
+        oystercard.touch_in(startstation,journeycomplete)
+        expect(journey).to receive(:end_journey).with(endstation)
+        oystercard.touch_out(endstation,journey)
+      end
+      it 'adds the new journey object to the journey history' do
+        oystercard.top_up(Oystercard::MAX_LIMIT)
+        oystercard.touch_in(startstation,journeycomplete)
+        oystercard.touch_out(endstation,journey)
+        expect(oystercard.journey_history).to include journey
+      end
+      it 'deducts the result of calling fare on the new journey object' do
+        oystercard.top_up(Oystercard::MAX_LIMIT)
+        oystercard.touch_in(startstation,journeycomplete)
+        expect {oystercard.touch_out(endstation,invalid_journey)}.to change{oystercard.balance}.by -6
+      end
+    end
+    context 'when touched in' do
+      it 'calls end_journey on the unfinished journey' do
+        oystercard.top_up(Oystercard::MAX_LIMIT)
+        oystercard.touch_in(startstation,journey)
+        expect(journey).to receive(:end_journey).with(endstation)
+        oystercard.touch_out(endstation,journey)
+      end
+      it 'deducts the result of calling fare on the unfinished journey' do
+        oystercard.top_up(Oystercard::MAX_LIMIT)
+        oystercard.touch_in(startstation,journey)
+        expect {oystercard.touch_out(endstation,journey)}.to change{oystercard.balance}.by -1
+      end
     end
   end
   
