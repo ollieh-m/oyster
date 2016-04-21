@@ -26,13 +26,13 @@ describe Oystercard do
     it 'makes the journey start' do
       oystercard.top_up(Oystercard::MAX_LIMIT)
       oystercard.touch_in(startstation)
-      expect(journey).to have_received(:start_journey).with(startstation)
+      expect(journey).to have_received(:start_journey).with(startstation,oystercard)
     end
   end
     
   describe '#touch_out' do
     it 'makes the journey end' do
-      expect(journey).to receive(:end_journey).with(endstation)
+      expect(journey).to receive(:end_journey).with(endstation,oystercard)
       oystercard.touch_out(endstation)
     end
   end
@@ -57,5 +57,5 @@ describe Oystercard do
       expect(oystercard.journey_history).to include({entrystation: startstation, exitstation: endstation})
     end
   end
-  
+
 end

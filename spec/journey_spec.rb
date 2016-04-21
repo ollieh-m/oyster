@@ -3,44 +3,58 @@ require 'journey'
 describe Journey do
     
   subject(:journey) { described_class.new }
-  let(:station) { double :station }
-  let(:card) {double :card, deduct: nil}
-   
+  let(:station1) {double :station}
+  let(:station2) {double :station}
+  let(:card) {spy :card}
   
   describe '#end_journey' do
-    it 'store the end station' do
-      journey.end_journey(station)
-      expect(journey.end_station).to eq station
+    it 'deducts a penalty fare if no entry station is not set' do
+      journey.end_journey(station2,card)
+      expect(card).to have_received(:deduct).with(Journey::PENALTY)
+    end
+    it 'deducts a standard fare if an entry station has been set' do
+      journey.start_journey(station1,card)
+      journey.end_journey(station2,card)
+      expect(card).to have_received(:deduct).with(Journey::STANDARD_FARE)
+    end
+    it 'tells the card to log the journey' do
+      journey.end_journey(station2,card)
+      expect(card).to have_received(:add_to_log).with(nil,station2)
+    end
+    it 'resets the entry and exit stations ready for the next journey' do
+      journey.start_journey(station1,card)
+      journey.end_journey(station2,card)
+      expect(journey.start_station).to eq nil
+      expect(journey.end_station).to eq nil
     end
   end
   
-  describe '#start_journey' do
-    it 'stores the start station' do
-      journey.start_journey(station)
-      expect(journey.start_station).to eq station
+  describe '#start_journey if entry station is already set' do
+    it 'deducts penalty fare from card' do
+      journey.start_journey(station1,card)
+      journey.start_journey(station2,card)
+      expect(card).to have_received(:deduct).with(Journey::PENALTY)
+    end
+    it 'tells the card to log the invalid journey' do
+      journey.start_journey(station1,card)
+      journey.start_journey(station2,card)
+      expect(card).to have_received(:add_to_log).with(station1,nil)
+    end
+    it 'sets the new entry station' do
+      journey.start_journey(station1,card)
+      journey.start_journey(station2,card)
+      expect(journey.start_station).to eq station2
     end
   end
 
-  describe '#completed?' do
-    it "returns false if a journey hasn't ended" do
-      expect(journey.completed?).to eq false
+  describe '#start_journey if entry station is not already set' do
+    it 'does not deduct penalty fare' do
+      journey.start_journey(station1,card)
+      expect(card).not_to have_received(:deduct)
     end
-    it 'ends the journey' do
-      journey.end_journey(station)
-      expect(journey).to be_completed
-    end 
-  end
-
-  describe '#fare' do
-    it 'deducts penalty fare if start or end station are nil' do
-      expect(card).to receive(:deduct).with(6)
-      journey.fare(card)
-    end
-    it 'deducts standard fare if there is a start and end station' do
-      journey.start_journey(station)
-      journey.end_journey(station)
-      expect(card).to receive(:deduct).with(1)
-      journey.fare(card)
+    it 'does not tell the card to log the invalid journey' do
+      journey.start_journey(station1,card)
+      expect(card).not_to have_received(:add_to_log)
     end
   end
 
