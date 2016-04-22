@@ -9,7 +9,7 @@ class Journeylog
 
 	def begin(station,card)
 		if current_journey.entry_station?
-			card.deduct(current_journey)
+			card.deduct(current_journey.fare)
 			@journey_history << {entrystation: current_journey.start_station, exitstation: current_journey.end_station}
 		end
 		current_journey.start_journey(station)
@@ -17,7 +17,7 @@ class Journeylog
 
 	def finish(station,card)
 		current_journey.end_journey(station)
-		card.deduct(@current_journey)
+		card.deduct(current_journey.fare)
 		@journey_history << {entrystation: current_journey.start_station, exitstation: current_journey.end_station}
 		current_journey.reset
 	end
