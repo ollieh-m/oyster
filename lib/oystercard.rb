@@ -24,24 +24,23 @@ class Oystercard
   def touch_out(station)
     @journeylog.finish(station,self)
   end
-  
-  def deduct(journey)
-    @balance -= 6 if !journey.complete?
-    @balance -=1 if journey.complete?
+
+  def deduct(amount)
+    @balance -= amount
   end
 
   def past_journeys
     @journeylog.journey_history
   end
-    
+
     private
-    
+
     def limit_reached?(deposit)
       deposit + balance > Oystercard::MAX_LIMIT
     end
 
     def too_poor?
       balance < Oystercard::MIN_LIMIT
-    end  
-  
+    end
+
 end

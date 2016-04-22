@@ -1,19 +1,19 @@
 require 'journey'
 
 describe Journey do
-    
+
   subject(:journey) { described_class.new }
   let(:station1) {double :station}
   let(:station2) {double :station}
   let(:card) {spy :card}
-  
+
   describe '#end_journey' do
     it 'sets @end_station' do
       journey.end_journey(station1)
       expect(journey.end_station).to eq station1
     end
   end
-  
+
   describe '#start_journey' do
     it 'sets @entry_station' do
       journey.start_journey(station1)
@@ -46,6 +46,20 @@ describe Journey do
       journey.end_journey(station2)
       expect{journey.reset}.to change{journey.end_station}.to nil
     end
+  end
+
+  describe '#fare' do
+    it 'returns 1 for a complete journey' do
+      journey.start_journey(station1)
+      journey.end_journey(station2)
+      expect(journey.fare).to eq Journey::MINIMUM_FARE
+    end
+
+    it 'returns 6 for a incomplet journey' do
+      journey.end_journey(station2)
+      expect(journey.fare).to eq Journey::PENALTY
+    end
+
   end
 
 end

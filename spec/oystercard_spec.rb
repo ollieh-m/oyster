@@ -6,7 +6,7 @@ describe Oystercard do
   subject(:oystercard){ described_class.new(journeylog) }
   let(:startstation) { double(:station) }
   let(:endstation) { double(:station) }
- 
+
   it 'defaults with balance of 0' do
     expect(oystercard.balance).to eq 0
   end
@@ -29,14 +29,14 @@ describe Oystercard do
       expect(journeylog).to have_received(:begin).with(startstation,oystercard)
     end
   end
-    
+
   describe '#touch_out' do
     it 'calls finish on the journeylog' do
       oystercard.touch_out(endstation)
       expect(journeylog).to have_received(:finish).with(endstation,oystercard)
     end
   end
-  
+
   describe "When there is less than #{Oystercard::MIN_LIMIT}" do
     it "cannot begin journey" do
       message = "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}"
@@ -44,14 +44,10 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    let(:incomplete_journey){ double(:journey, complete?: false) }
-    let(:complete_journey){ double(:journey, complete?: true)}
-    it 'deducts the penalty fare if the journey passes in is not complete' do
-      expect{oystercard.deduct(incomplete_journey)}.to change{oystercard.balance}.by -6
-    end
-    it 'deducts the standard fare if the journey passed in is complete' do
-      expect{oystercard.deduct(complete_journey)}.to change{oystercard.balance}.by -1
+  describe "#deduct" do
+    it 'balance reduces by 1 when deducting 1' do
+      oystercard.top_up(Oystercard::MAX_LIMIT)
+      expect {oystercard.deduct(1)}.to change{ oystercard.balance }.by -1
     end
   end
 
