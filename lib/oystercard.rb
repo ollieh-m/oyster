@@ -11,13 +11,12 @@ class Oystercard
   end
 
   def top_up(deposit)
-    message = "No more than #{Oystercard::MAX_LIMIT} in balance!"
-    fail message if limit_reached?(deposit)
+    fail "No more than #{MAX_LIMIT} in balance!" if limit_reached?(deposit)
     @balance += deposit
   end
 
   def touch_in(station)
-    fail "insufficient funds! Need at least #{Oystercard::MIN_LIMIT}" if too_poor?
+    fail "insufficient funds! Need at least #{MIN_LIMIT}" if too_poor?
     @journeylog.begin(station,self)
   end
 
@@ -30,17 +29,17 @@ class Oystercard
   end
 
   def past_journeys
-    @journeylog.journey_history
+    @journeylog.journey_history.dup
   end
 
     private
 
     def limit_reached?(deposit)
-      deposit + balance > Oystercard::MAX_LIMIT
+      deposit + balance > MAX_LIMIT
     end
 
     def too_poor?
-      balance < Oystercard::MIN_LIMIT
+      balance < MIN_LIMIT
     end
 
 end

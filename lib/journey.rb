@@ -2,7 +2,8 @@ class Journey
 
   MINIMUM_FARE = 1
   PENALTY = 6
-  attr_reader :end_station, :start_station
+
+  attr_reader :start_station, :end_station
 
   def initialize
     reset
@@ -17,7 +18,7 @@ class Journey
   end
 
   def entry_station?
-    !@start_station.nil?
+    !!start_station
   end
 
   def complete?
@@ -30,11 +31,13 @@ class Journey
   end
 
   def fare
-    if complete? 
-      MINIMUM_FARE + (start_station.zone - end_station.zone).abs
-    else
-      PENALTY
-    end
+    complete? ? zone_calculator : PENALTY
   end
+
+    private
+
+    def zone_calculator
+      MINIMUM_FARE + (start_station.zone - end_station.zone).abs
+    end
 
 end
